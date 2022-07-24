@@ -7,10 +7,13 @@ import android.view.WindowManager
 import android.widget.Toast
 import com.example.trelloclone.R
 import com.example.trelloclone.databinding.ActivitySignUpBinding
+import com.example.trelloclone.firebase.FirestoreClass
+import com.example.trelloclone.models.User
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.ktx.Firebase
 import kotlinx.android.synthetic.main.activity_sign_up.*
 
 class SignUpActivity : BaseActivity() {
@@ -43,6 +46,24 @@ class SignUpActivity : BaseActivity() {
 
     }
 
+
+    fun userRegisteredSuccess() {
+
+        Toast.makeText(
+            this@SignUpActivity,
+            "You have successfully registered.",
+            Toast.LENGTH_SHORT
+        ).show()
+
+        // Hide the progress dialog
+        hideProgressDialog()
+        //Here the new user registered is automatically signed-in so we just sign-out the user from firebase
+        //and send him to Intro Screen for Sign-In
+        FirebaseAuth.getInstance().signOut()
+        // Finish the Sign-Up Screen
+        finish()
+    }
+
     private fun registerUser() {
         val name: String = et_name.text.toString().trim { it <= ' ' }
         val email: String = et_email.text.toString().trim { it <= ' ' }
@@ -64,7 +85,9 @@ class SignUpActivity : BaseActivity() {
                         val firebaseUser: FirebaseUser = task.result!!.user!!
                         // Registered Email
                         val registeredEmail = firebaseUser.email!!
-
+                        //FirebaseAuth.getInstance().currentUser!!.uid
+                        val user = User(firebaseUser.uid, name, registeredEmail)
+                        FirestoreClass().registerUser(this, user)
                     } else {
                         Toast.makeText(
                             this@SignUpActivity,
@@ -74,7 +97,6 @@ class SignUpActivity : BaseActivity() {
                     }
                 }
         }
-
     }
 
     private fun validateForm(
