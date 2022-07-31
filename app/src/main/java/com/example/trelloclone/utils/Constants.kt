@@ -22,6 +22,10 @@ object Constants {
     // This  is used for the collection name for USERS.
     const val BOARDS: String = "boards"
 
+    const val DOCUMENT_ID: String = "documentId"
+
+    const val TASK_LIST: String = "taskList"
+
     // We transfer this code from MyProfile Activity to Constants is to reduce the duplicate code
     fun showImageChooser(activity: Activity) {
         var galleryIntent = Intent(

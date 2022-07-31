@@ -1,6 +1,7 @@
 package com.example.trelloclone.adapters
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -45,10 +46,10 @@ open class BoardItemsAdapters(private val context: Context, private var list: Ar
             holder.itemView.tv_created_by.text = "Created By : ${curr.createdBy}"
 
             holder.itemView.setOnClickListener {
-
-                if (onClickListener != null) {
+                Log.i("Holder","Holder")
+//                if (onClickListener != null) {
                     onClickListener!!.onClick(position, curr)
-                }
+//                }
             }
 
         }

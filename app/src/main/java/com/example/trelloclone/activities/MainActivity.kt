@@ -160,6 +160,16 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             val adapter = BoardItemsAdapters(this,boardList)
             rv_boards_list.adapter = adapter //Attach the adapter to the recycle view
 //            adapter.notifyDataSetChanged()
+
+            adapter.setOnClickListener(object :
+                BoardItemsAdapters.OnClickListener {
+                override fun onClick(position: Int, model: Board) {
+                    val intent = Intent(this@MainActivity, TaskListActivity::class.java)
+                    intent.putExtra(Constants.DOCUMENT_ID, model.documentId)
+                    startActivity(intent)
+                }
+            })
+
         } else {
             Log.i("Size","Less than zero")
             rv_boards_list.visibility = View.GONE
