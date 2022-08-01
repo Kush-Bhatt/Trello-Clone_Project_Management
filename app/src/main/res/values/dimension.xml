@@ -105,7 +105,7 @@
     <dimen name="item_member_detail_layout_marginStart">10dp</dimen>
     <dimen name="item_member_name_text_size">18sp</dimen>
     <dimen name="item_member_email_text_size">14sp</dimen>
-    <dimen name="item_member_divider_height">0.3dp</dimen>
+    <dimen name="item_member_divider_height">1dp</dimen>
     <dimen name="item_member_divider_marginTop">5dp</dimen>
 
     <dimen name="dialog_member_cv_elevation">3dp</dimen>

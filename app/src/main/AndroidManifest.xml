@@ -15,10 +15,15 @@
         android:theme="@style/Theme.TrelloClone"
         android:windowSoftInputMode="adjustResize">
         <activity
+            android:name=".activities.MembersActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme" />
+        <activity
             android:name=".activities.TaskListActivity"
             android:exported="false"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme"/>
+            android:theme="@style/AppTheme" />
         <activity
             android:name=".activities.CreateBoardActivity"
             android:exported="false"

@@ -28,6 +28,7 @@ data class Board(
         writeString(createdBy)
         writeStringList(assignedTo)
         writeString(documentId)
+        writeTypedList(taskList)
     }
 
     companion object {
