@@ -13,6 +13,7 @@ import com.example.trelloclone.firebase.FirestoreClass
 import com.example.trelloclone.models.Board
 import com.example.trelloclone.models.Card
 import com.example.trelloclone.models.Task
+import com.example.trelloclone.models.User
 import com.example.trelloclone.utils.Constants
 import kotlinx.android.synthetic.main.activity_task_list.*
 
@@ -23,9 +24,14 @@ class TaskListActivity : BaseActivity() {
 
     private lateinit var boardDocumentId : String
 
+    // A global variable for Assigned Members List.
+    lateinit var assignedMembersDetailList: ArrayList<User>
+
     companion object {
         //A unique code for starting the activity for result
         const val MEMBERS_REQUEST_CODE: Int = 13
+
+        const val CARD_DETAILS_REQUEST_CODE: Int = 14
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -74,6 +80,7 @@ class TaskListActivity : BaseActivity() {
                 //lets say users add a member in any particular task and suppose that user remains in that add member
                 //activity for some time but the added member made some changes in the taskactivity so to display it we reload the
                 //data of taskactivity when any changes made
+
                 startActivityForResult(intent, MEMBERS_REQUEST_CODE)
 
                 return true
@@ -85,7 +92,8 @@ class TaskListActivity : BaseActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == Activity.RESULT_OK
-            && requestCode == MEMBERS_REQUEST_CODE
+            && (requestCode == MEMBERS_REQUEST_CODE
+            || requestCode == CARD_DETAILS_REQUEST_CODE)
         ) {
             // Show the progress dialog.
             showProgressDialog(resources.getString(R.string.please_wait))
@@ -106,17 +114,19 @@ class TaskListActivity : BaseActivity() {
 
 //         Setup the task list view using the adapter class and task list of the board.
 //         Here we are appending an item view for adding a list task list for the board.
-        val addTaskList = Task(resources.getString(R.string.add_list))  //doubt
-        boardDetails.taskList.add(addTaskList)
+//        val addTaskList = Task(resources.getString(R.string.add_list))  //doubt
+//        boardDetails.taskList.add(addTaskList)
+//
+//        rv_task_list.layoutManager =
+//            LinearLayoutManager(this@TaskListActivity, LinearLayoutManager.HORIZONTAL, false)
+//        rv_task_list.setHasFixedSize(true)
+//
+//        // Create an instance of TaskListItemsAdapter and pass the task list to it.
+//        val adapter = TaskListItemsAdapter(this@TaskListActivity, board.taskList)
+//        rv_task_list.adapter = adapter // Attach the adapter to the recyclerView.
 
-        rv_task_list.layoutManager =
-            LinearLayoutManager(this@TaskListActivity, LinearLayoutManager.HORIZONTAL, false)
-        rv_task_list.setHasFixedSize(true)
-
-        // Create an instance of TaskListItemsAdapter and pass the task list to it.
-        val adapter = TaskListItemsAdapter(this@TaskListActivity, board.taskList)
-        rv_task_list.adapter = adapter // Attach the adapter to the recyclerView.
-
+        showProgressDialog(resources.getString(R.string.please_wait))
+        FirestoreClass().getAssignedMembersListDetails(this, boardDetails.assignedTo)
     }
 
     fun createTaskList(taskListName: String) {
@@ -174,7 +184,9 @@ class TaskListActivity : BaseActivity() {
         boardDetails.taskList.removeAt(boardDetails.taskList.size - 1)
 
         val cardAssignedUsersList: ArrayList<String> = ArrayList()
-        cardAssignedUsersList.add(FirestoreClass().getCurrentUserId())
+
+        //Initially no one is assigned that card task (will later on decide the member os the card)
+//        cardAssignedUsersList.add(FirestoreClass().getCurrentUserId())
 
         val card = Card(cardName, FirestoreClass().getCurrentUserId(), cardAssignedUsersList)
 
@@ -194,4 +206,41 @@ class TaskListActivity : BaseActivity() {
         FirestoreClass().addUpdateTaskList(this@TaskListActivity, boardDetails)
     }
 
+    fun boardMembersDetailList(list: ArrayList<User>) {
+        assignedMembersDetailList = list
+        hideProgressDialog()
+
+        val addTaskList = Task(resources.getString(R.string.add_list))  //(add list) button
+        boardDetails.taskList.add(addTaskList)
+
+        rv_task_list.layoutManager =
+            LinearLayoutManager(this@TaskListActivity, LinearLayoutManager.HORIZONTAL, false)
+        rv_task_list.setHasFixedSize(true)
+
+        // Create an instance of TaskListItemsAdapter and pass the task list to it.
+        val adapter = TaskListItemsAdapter(this@TaskListActivity, boardDetails.taskList)
+        rv_task_list.adapter = adapter // Attach the adapter to the recyclerView.
+    }
+
+
+    fun cardDetails(taskListPosition: Int, cardPosition: Int) {
+        val intent = Intent(this@TaskListActivity, CardDetailsActivity::class.java)
+        intent.putExtra(Constants.BOARD_DETAIL, boardDetails)
+        intent.putExtra(Constants.TASK_LIST_ITEM_POSITION, taskListPosition)
+        intent.putExtra(Constants.CARD_LIST_ITEM_POSITION, cardPosition)
+        intent.putExtra(Constants.BOARD_MEMBERS_LIST, assignedMembersDetailList)
+        startActivityForResult(intent, CARD_DETAILS_REQUEST_CODE)
+    }
+
+    fun updateCardsInTaskList(taskListPosition: Int, cards: ArrayList<Card>) {
+
+        // Remove the last item
+        boardDetails.taskList.removeAt(boardDetails.taskList.size - 1)
+
+        boardDetails.taskList[taskListPosition].cards = cards
+
+        // Show the progress dialog.
+        showProgressDialog(resources.getString(R.string.please_wait))
+        FirestoreClass().addUpdateTaskList(this@TaskListActivity, boardDetails)
+    }
 }

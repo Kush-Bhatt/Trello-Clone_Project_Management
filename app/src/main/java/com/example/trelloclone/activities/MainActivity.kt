@@ -1,7 +1,9 @@
 package com.example.trelloclone.activities
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
@@ -47,7 +49,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         // Assign the NavigationView.OnNavigationItemSelectedListener to navigation view.
         nav_view.setNavigationItemSelectedListener(this)
 
-        
+
         FirestoreClass().loadUserData(this,true)
 
         //floating action button to navigate to Create Board Activity
@@ -176,8 +178,6 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             tv_no_boards_available.visibility = View.VISIBLE
         }
     }
-
-
 }
 
 // by default project management text inside toolbar app_bar_main   doubt

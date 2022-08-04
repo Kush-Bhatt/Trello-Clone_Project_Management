@@ -17,6 +17,10 @@
         android:textSize="@dimen/splash_screen_title_text_size"
         android:textColor="@color/white"
         android:textStyle="bold"
+        android:autoSizeTextType="uniform"
+        android:autoSizeMinTextSize="12sp"
+        android:autoSizeMaxTextSize="50sp"
+        android:autoSizeStepGranularity="2sp"
         />
 
 </LinearLayout>
